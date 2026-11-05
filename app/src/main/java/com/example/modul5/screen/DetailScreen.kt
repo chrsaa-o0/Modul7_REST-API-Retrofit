@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.modul5.ui.detail.DetailUiState
+
 @Composable
 fun DetailScreen(
     uiState: DetailUiState,
@@ -17,8 +18,8 @@ fun DetailScreen(
             .fillMaxSize()
             .statusBarsPadding()
     ) {
-        when (uiState) {
-            is DetailUiState.Loading -> {
+        when {
+            uiState.isLoading -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -26,8 +27,43 @@ fun DetailScreen(
                     CircularProgressIndicator()
                 }
             }
-            is DetailUiState.Success -> {
-                val student = uiState.student
+            uiState.errorMessage != null -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "⚠️ Terjadi Kesalahan",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = uiState.errorMessage ?: "Data tidak tersedia",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = onBack) {
+                                Text("Kembali")
+                            }
+                        }
+                    }
+                }
+            }
+            uiState.student != null -> {
+                val student = uiState.student!!
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -55,44 +91,10 @@ fun DetailScreen(
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(text = "Nama: ${student.name}", style = MaterialTheme.typography.titleMedium)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = "Program: ${student.program}", style = MaterialTheme.typography.bodyMedium)
+                            // Diubah dari program & year menjadi email & university sesuai Modul 7
+                            Text(text = "Email: ${student.email}", style = MaterialTheme.typography.bodyMedium)
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = "Tahun: ${student.year}", style = MaterialTheme.typography.bodyMedium)
-                        }
-                    }
-                }
-            }
-            is DetailUiState.Error -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = "⚠️ Student Tidak Ditemukan",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = uiState.message,
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = onBack) {
-                                Text("Kembali ke Home")
-                            }
+                            Text(text = "University: ${student.university}", style = MaterialTheme.typography.bodyMedium)
                         }
                     }
                 }

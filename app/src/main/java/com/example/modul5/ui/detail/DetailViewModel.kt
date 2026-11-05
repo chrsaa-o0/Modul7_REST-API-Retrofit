@@ -1,23 +1,29 @@
 package com.example.modul5.ui.detail
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.modul5.data.repository.StudentRepository
+
 class DetailViewModel(
     private val repository: StudentRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf<DetailUiState>(DetailUiState.Loading)
+
+    var uiState by mutableStateOf(DetailUiState())
         private set
+
     fun loadStudent(id: Int) {
-        val student = repository.getStudentById(id)
-        uiState = if (student != null) {
-            DetailUiState.Success(student)
-        } else {
-            DetailUiState.Error("Student tidak ditemukan")
+        uiState = uiState.copy(isLoading = true, errorMessage = null)
+        repository.getStudent(id) { result ->
+            uiState = result.fold(
+                onSuccess = { data -> DetailUiState(student = data) },
+                onFailure = { error -> DetailUiState(errorMessage = error.message ?: "Data tidak tersedia") }
+            )
         }
     }
+
     companion object {
         fun factory(repository: StudentRepository): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {

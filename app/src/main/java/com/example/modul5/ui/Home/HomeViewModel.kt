@@ -9,7 +9,8 @@ import com.example.modul5.data.model.Student
 import com.example.modul5.data.repository.StudentRepository
 data class HomeUiState(
     val students: List<Student> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null
 )
 class HomeViewModel(
     private val repository: StudentRepository
@@ -20,20 +21,25 @@ class HomeViewModel(
         loadStudents()
     }
     fun loadStudents() {
-        uiState = uiState.copy(isLoading = true)
-        val studentList = repository.getStudents()
-        uiState = uiState.copy(
-            students = studentList,
-            isLoading = false
-        )
+        uiState = uiState.copy(isLoading = true, errorMessage = null)
+        repository.getStudents { result ->
+            uiState = result.fold(
+                onSuccess = { data -> HomeUiState(students = data) },
+                onFailure = { error -> HomeUiState(errorMessage = error.message ?: "Gagal mengambil data") }
+            )
+        }
     }
-    companion object {
-        fun factory(repository: StudentRepository): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return HomeViewModel(repository) as T
-                }
-            }
+    fun searchStudents(query: String) {
+        if (query.isBlank()) {
+            loadStudents()
+            return
+        }
+        uiState = uiState.copy(isLoading = true, errorMessage = null)
+        repository.searchStudents(query) { result ->
+            uiState = result.fold(
+                onSuccess = { data -> HomeUiState(students = data) },
+                onFailure = { error -> HomeUiState(errorMessage = error.message ?: "Pencarian gagal") }
+            )
+        }
     }
 }
