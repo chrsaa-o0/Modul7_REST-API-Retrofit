@@ -1,13 +1,11 @@
-Modul6_ArsitekturAplikasiAndroid
+# Modul7_REST-API-Retrofit
 
 Nama: Charisa Salsabila Larasati
 
 NIM: 24515020111022
 
-Deskripsi: Tugas praktikum Pengembangan Aplikasi Perangkat Bergerak (PAPB) mengenai Arsitektur Aplikasi Android (UI Layer, ViewModel, Repository, & Data Layer)
+Deskripsi: Tugas praktikum Pengembangan Aplikasi Perangkat Bergerak (PAPB) mengenai integrasi REST API menggunakan Retrofit, DTO mapping, asynchronous callback, serta penerapan fitur pencarian data secara online pada Arsitektur Aplikasi Android.
 
-Proyek ini merupakan pengembangan lanjutan dari NavigationLab yang menerapkan prinsip Clean Architecture dan Separation of Concerns pada pengembangan aplikasi Android berbasis Jetpack Compose. Fokus utamanya adalah memisahkan tanggung jawab secara tegas, di mana komponen antarmuka seperti HomeScreen dan DetailScreen hanya bertugas merender state dan menangani interaksi pengguna, sementara logika pengelolaan data didelegasikan sepenuhnya ke ViewModel melalui kontrak antarmuka Repository yang mengabstraksi sumber data lokal in-memory (StudentLocalDataSource).
+Proyek ini merupakan pengembangan lanjutan dari modul arsitektur sebelumnya yang menggunakan sumber data eksternal secara langsung dari layanan web service (DummyJSON API). Prinsip Clean Architecture dan pemisahan lapisan (Separation of Concerns) tetap dijaga ketat, di mana komponen UI (`HomeScreen`, `DetailScreen`) hanya bertugas merender state dan menerima interaksi pengguna tanpa pernah menyentuh jaringan secara langsung.
 
-Dalam pengembangannya, aplikasi ini dibangun secara bertahap mulai dari penataan struktur package berlapis, pembuatan model data Student, perancangan repository dengan antarmuka yang bersih, hingga penyusunan UI state dan ViewModel tingkat layar yang aman terhadap perubahan konfigurasi perangkat seperti rotasi layar. Selain itu, integrasi navigasi multi-layar dari Home ke Detail menggunakan argumen studentId dipastikan berjalan mulus bersamaan dengan fungsionalitas tombol Back, Profile, dan About.
-
-Sebagai bagian dari pengembangan fitur utama, daftar mahasiswa pada halaman Home dirancang secara interaktif menggunakan komponen LazyColumn dengan penambahan data baru serta implementasi penanganan state error khusus untuk skenario ketika data yang dicari tidak ditemukan.
+Dalam pengembangannya, implementasi mencakup pembuatan antarmuka jaringan `StudentApiService` dengan endpoint pencarian (`users/search?q={query}`), pengelolaan DTO dan mapping data ke model `Student`, serta pembungkusan proses asinkron berbasis callback melalui `StudentRemoteDataSource` dan `StudentRepository`. Selain itu, fungsionalitas tombol Cari dirancang agar mampu memuat data berdasarkan kata kunci, menangani kondisi query kosong dengan memuat ulang daftar awal, serta mempertahankan loading dan error state demi pengalaman pengguna yang optimal. Navigasi antar-layar menuju halaman detail berdasarkan ID unik juga tetap terintegrasi dengan mulus.
